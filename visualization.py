@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import numpy as np
+
 
 
 def show_visualizations():
@@ -25,8 +24,8 @@ def show_visualizations():
     alternative_scores = [0.2436, 0.3127, 0.4437]
 
     # 1. Ιεραρχική δομή (Matplotlib)
-    plt.figure(figsize=(10, 6))
-    plt.title('Ιεραρχική Δομή Απόφασης AHP', pad=20)
+    plt.figure(figsize=(15, 6))
+    plt.title('Ιεραρχική Δομή Απόφασης AHP')
 
     # Ορισμός θέσεων
     levels = {
@@ -37,8 +36,8 @@ def show_visualizations():
         'Κόστος ανάπτυξης': (-2.5, 0),
         'Κόστος συντήρησης': (-1.5, 0),
         'Αξιοπιστία': (-0.5, 0),
-        'Ταχύτητα': (0.5, 0),
-        'Ασφάλεια δεδομένων': (1.5, 0),
+        'Ταχύτητα': (0, 0),
+        'Ασφάλεια δεδομένων': (0.5, 0),
         'Συμβατότητα': (1.5, 0),
         'Ευχρηστία': (2.5, 0)
     }
@@ -63,17 +62,14 @@ def show_visualizations():
         plt.plot(xs, ys, 'b-', lw=1.5)
 
     for node, (x, y) in levels.items():
-        plt.text(x, y, node, ha='center', va='center',
-                 bbox=dict(facecolor='white', edgecolor='blue', boxstyle='round,pad=0.5'))
+        plt.text(x, y, node, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='blue', boxstyle='round,pad=0.5'))
 
     plt.axis('off')
     plt.tight_layout()
     plt.show()
 
     # 2. Βάρη κριτηρίων (Pie Chart)
-    plt.figure(figsize=(8, 8))
-    plt.pie(criteria_weights, labels=criteria, autopct='%1.1f%%',
-            colors=sns.color_palette('pastel'), startangle=90)
+    plt.pie(criteria_weights, labels=criteria, autopct='%1.1f%%', colors=sns.color_palette('pastel'))
     plt.title('Κατανομή Βαρών Κριτηρίων')
     plt.show()
 
@@ -81,7 +77,7 @@ def show_visualizations():
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     fig.suptitle('Βάρη Υποκριτηρίων ανά Κριτήριο')
 
-    colors = sns.color_palette('husl', 8)
+    colors = sns.color_palette('pastel')
     for ax, (criterion, subs), color in zip(axes, subcriteria.items(), colors):
         weights = subcriteria_weights[criterion]
         sns.barplot(x=subs, y=weights, ax=ax, palette=[color, color])
