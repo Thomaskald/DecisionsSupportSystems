@@ -99,7 +99,7 @@ def show_visualizations():
         y=alternative_scores,
         marker_color=px.colors.qualitative.Plotly[:3],
         text=[f'{score:.2%}' for score in alternative_scores],
-        textposition='auto'
+        #textposition='auto'
     ))
 
     fig.update_layout(
