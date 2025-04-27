@@ -93,7 +93,7 @@ def show_visualizations():
     plt.title('Κατανομή Βαρών Κριτηρίων')
     plt.show()
 
-    # 3. Bar plot for subcriteria weights
+    # Bar plot for subcriteria weights
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     fig.suptitle('Βάρη Υποκριτηρίων ανά Κριτήριο')
 
@@ -112,7 +112,7 @@ def show_visualizations():
     plt.tight_layout()
     plt.show()
 
-    # 4. Bar plot for alternatives
+    # Bar plot for alternatives
     plt.figure(figsize=(8, 6))
     sns.barplot(x=alternatives, y=alternative_scores, palette="Blues_d")
 
@@ -129,7 +129,4 @@ def show_visualizations():
 
 
 if __name__ == "__main__":
-
-    sns.set_style("whitegrid")
-    plt.rcParams['font.family'] = 'DejaVu Sans'
     show_visualizations()
