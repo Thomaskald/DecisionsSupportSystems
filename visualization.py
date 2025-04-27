@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-import plotly.graph_objects as go
-
 
 
 def show_visualizations():
@@ -117,29 +115,23 @@ def show_visualizations():
     plt.show()
 
     # 4. Τελική κατάταξη (Plotly Interactive)
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=alternatives,
-        y=alternative_scores,
-        marker_color=px.colors.qualitative.Plotly[:3],
-        text=[f'{score:.2%}' for score in alternative_scores],
-        #textposition='auto'
-    ))
 
-    fig.update_layout(
-        title='Τελική Κατάταξη Εναλλακτικών Λύσεων',
-        xaxis_title='Εναλλακτικές Λύσεις',
-        yaxis_title='Βαθμολογία',
-        template='plotly_white'
-    )
+    plt.figure(figsize=(8, 6))
+    sns.barplot(x=alternatives, y=alternative_scores, palette="Blues_d")
 
-    fig.show()
+    plt.title('Τελική Κατάταξη Εναλλακτικών Λύσεων')
+    plt.xlabel('Εναλλακτικές Λύσεις')
+    plt.ylabel('Βαθμολογία')
+    for i, v in enumerate(alternative_scores):
+        plt.text(i, v + 0.01, f'{v:.2%}', ha='center', va='bottom')
+
+    plt.tight_layout()
+    plt.show()
 
 
 
 
 if __name__ == "__main__":
-    import plotly.express as px
 
     sns.set_style("whitegrid")
     plt.rcParams['font.family'] = 'DejaVu Sans'
