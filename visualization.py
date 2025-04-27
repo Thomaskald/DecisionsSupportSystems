@@ -3,7 +3,7 @@ import seaborn as sns
 
 
 def show_visualizations():
-    # Δεδομένα από την ανάλυση AHP
+
     criteria = ['Οικονομικά θέματα', 'Απόδοση', 'Κοινωνική αποδοχή']
     criteria_weights = [0.2970, 0.5396, 0.1634]
 
@@ -21,11 +21,10 @@ def show_visualizations():
     alternatives = ['Ιστοσελίδα', 'Mobile εφαρμογή', 'Κεντρικό σύστημα']
     alternative_scores = [0.2436, 0.3127, 0.4437]
 
-    # 1. Ιεραρχική δομή (Matplotlib)
+    #Hierarchy graph
     plt.figure(figsize=(15, 6))
     plt.title('Ιεραρχική Δομή Απόφασης AHP')
 
-    # Ορισμός θέσεων
     levels = {
         'Αναβάθμιση ΕΣΥ': (0, 2),
         'Οικονομικά θέματα': (-2, 1),
@@ -43,7 +42,6 @@ def show_visualizations():
         'Κεντρικό σύστημα': (1.5, -1)
     }
 
-    # Συνδέσεις
     connections = [
         ('Αναβάθμιση ΕΣΥ', 'Οικονομικά θέματα'),
         ('Αναβάθμιση ΕΣΥ', 'Απόδοση'),
@@ -90,12 +88,12 @@ def show_visualizations():
     plt.tight_layout()
     plt.show()
 
-    # 2. Βάρη κριτηρίων (Pie Chart)
+    # Pie chart for criteria weights
     plt.pie(criteria_weights, labels=criteria, autopct='%1.1f%%', colors=sns.color_palette('pastel'))
     plt.title('Κατανομή Βαρών Κριτηρίων')
     plt.show()
 
-    # 3. Βάρη υποκριτηρίων (Bar Plots)
+    # 3. Bar plot for subcriteria weights
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     fig.suptitle('Βάρη Υποκριτηρίων ανά Κριτήριο')
 
@@ -114,8 +112,7 @@ def show_visualizations():
     plt.tight_layout()
     plt.show()
 
-    # 4. Τελική κατάταξη (Plotly Interactive)
-
+    # 4. Bar plot for alternatives
     plt.figure(figsize=(8, 6))
     sns.barplot(x=alternatives, y=alternative_scores, palette="Blues_d")
 
