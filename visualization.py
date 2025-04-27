@@ -22,7 +22,7 @@ def show_visualizations():
     alternative_scores = [0.2436, 0.3127, 0.4437]
 
     #Hierarchy graph
-    plt.figure(figsize=(15, 6))
+    plt.figure(figsize=(14, 7))
     plt.title('Ιεραρχική Δομή Απόφασης AHP')
 
     levels = {
@@ -82,26 +82,26 @@ def show_visualizations():
         plt.plot(xs, ys, 'b-', lw=1.5)
 
     for node, (x, y) in levels.items():
-        plt.text(x, y, node, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='blue', boxstyle='round,pad=0.5'))
+        plt.text(x, y, node, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='blue'))
 
     plt.axis('off')
     plt.tight_layout()
     plt.show()
 
     # Pie chart for criteria weights
-    plt.pie(criteria_weights, labels=criteria, autopct='%1.1f%%', colors=sns.color_palette('pastel'))
+    plt.pie(criteria_weights, labels=criteria, autopct='%1.1f%%', colors=sns.color_palette('Set2'))
     plt.title('Κατανομή Βαρών Κριτηρίων')
     plt.show()
 
     # Bar plot for subcriteria weights
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+    fig, axes = plt.subplots(1, 3, figsize=(14, 7))
     fig.suptitle('Βάρη Υποκριτηρίων ανά Κριτήριο')
 
-    colors = sns.color_palette('pastel')
-    for ax, (criterion, subs), color in zip(axes, subcriteria.items(), colors):
-        weights = subcriteria_weights[criterion]
+    colors = sns.color_palette('Set2')
+    for ax, (criteria, subs), color in zip(axes, subcriteria.items(), colors):
+        weights = subcriteria_weights[criteria]
         sns.barplot(x=subs, y=weights, ax=ax, palette=[color, color])
-        ax.set_title(criterion)
+        ax.set_title(criteria)
         ax.set_ylim(0, 1)
         for p in ax.patches:
             ax.annotate(f"{p.get_height():.2f}",

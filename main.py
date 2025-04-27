@@ -71,15 +71,11 @@ def ahp_analysis():
     alternative_scores = np.zeros(3)
     for i in range(3):
 
-        economic = criteria_weights[0] * (
-                    economic_weights[0] * dev_cost_weights[i] + economic_weights[1] * maint_cost_weights[i])
+        economic = criteria_weights[0] * (economic_weights[0] * dev_cost_weights[i] + economic_weights[1] * maint_cost_weights[i])
 
-        performance = criteria_weights[1] * (performance_weights[0] * reliability_weights[i] +
-                                             performance_weights[1] * speed_weights[i] +
-                                             performance_weights[2] * security_weights[i])
+        performance = criteria_weights[1] * (performance_weights[0] * reliability_weights[i] + performance_weights[1] * speed_weights[i] + performance_weights[2] * security_weights[i])
 
-        social = criteria_weights[2] * (
-                    social_weights[0] * compat_weights[i] + social_weights[1] * usability_weights[i])
+        social = criteria_weights[2] * (social_weights[0] * compat_weights[i] + social_weights[1] * usability_weights[i])
 
         alternative_scores[i] = economic + performance + social
 
