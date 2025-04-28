@@ -8,7 +8,7 @@ def calculate_weights(matrix):
 #Calculate CR
 def calculate_cr(matrix):
     n = matrix.shape[0]
-    if n <= 2: return 0.0  # Για πίνακες μικρότερους από 3x3
+    if n <= 2: return 0.0  # For 2x2 matrix
 
     weights = calculate_weights(matrix)
     weighted_sum = np.dot(matrix, weights)
@@ -31,11 +31,8 @@ def ahp_analysis():
     }
     alternatives = ['Ιστοσελίδα', 'Mobile εφαρμογή', 'Κεντρικό σύστημα']
 
-    criteria_matrix = np.array([
-        [1, 1 / 3, 1 / 2],
-        [3, 1, 2],
-        [2, 1 / 2, 1]
-    ])
+    # Matrix declaration
+    criteria_matrix = np.array([[1, 1 / 3, 1 / 2], [3, 1, 2], [2, 1 / 2, 1]])
 
     economic_matrix = np.array([[1, 1 / 2], [2, 1]])
     performance_matrix = np.array([[1, 2, 4], [1 / 2, 1, 2], [1 / 4, 1 / 2, 1]])
@@ -49,7 +46,7 @@ def ahp_analysis():
     compat_matrix = np.array([[1, 2, 3], [1 / 2, 1, 2], [1 / 3, 1 / 2, 1]])
     usability_matrix = np.array([[1, 1 / 3, 1 / 5], [3, 1, 1 / 2], [5, 2, 1]])
 
-
+    # Weights and CR calculation
     criteria_weights = calculate_weights(criteria_matrix)
     cr_criteria = calculate_cr(criteria_matrix)
 
@@ -68,17 +65,15 @@ def ahp_analysis():
     compat_weights = calculate_weights(compat_matrix)
     usability_weights = calculate_weights(usability_matrix)
 
+    # Alternatives score calculation
     alternative_scores = np.zeros(3)
     for i in range(3):
-
         economic = criteria_weights[0] * (economic_weights[0] * dev_cost_weights[i] + economic_weights[1] * maint_cost_weights[i])
-
         performance = criteria_weights[1] * (performance_weights[0] * reliability_weights[i] + performance_weights[1] * speed_weights[i] + performance_weights[2] * security_weights[i])
-
         social = criteria_weights[2] * (social_weights[0] * compat_weights[i] + social_weights[1] * usability_weights[i])
-
         alternative_scores[i] = economic + performance + social
 
+    # Results
     print("1. ΒΑΡΗ ΚΡΙΤΗΡΙΩΝ:")
     for crit, weight in zip(criteria, criteria_weights):
         print(f"{crit}: {weight:.4f}")

@@ -4,8 +4,9 @@ import seaborn as sns
 
 def show_visualizations():
 
+    # Values from previous question
     criteria = ['Οικονομικά θέματα', 'Απόδοση', 'Κοινωνική αποδοχή']
-    criteria_weights = [0.2970, 0.5396, 0.1634]
+    criteria_weights = [0.1638, 0.5390, 0.2973]
 
     subcriteria = {
         'Οικονομικά θέματα': ['Κόστος ανάπτυξης', 'Κόστος συντήρησης'],
@@ -19,13 +20,12 @@ def show_visualizations():
     }
 
     alternatives = ['Ιστοσελίδα', 'Mobile εφαρμογή', 'Κεντρικό σύστημα']
-    alternative_scores = [0.2436, 0.3127, 0.4437]
+    alternative_scores = [0.3903, 0.2943, 0.3154]
 
     #Hierarchy graph
     plt.figure(figsize=(14, 7))
     plt.title('Ιεραρχική Δομή Απόφασης AHP')
-
-    levels = {
+    place = {
         'Αναβάθμιση ΕΣΥ': (0, 2),
         'Οικονομικά θέματα': (-2, 1),
         'Απόδοση': (0, 1),
@@ -41,7 +41,6 @@ def show_visualizations():
         'Εφαρμογή': (0, -1),
         'Κεντρικό σύστημα': (1.5, -1)
     }
-
     connections = [
         ('Αναβάθμιση ΕΣΥ', 'Οικονομικά θέματα'),
         ('Αναβάθμιση ΕΣΥ', 'Απόδοση'),
@@ -77,11 +76,11 @@ def show_visualizations():
     ]
 
     for start, end in connections:
-        xs = [levels[start][0], levels[end][0]]
-        ys = [levels[start][1], levels[end][1]]
+        xs = [place[start][0], place[end][0]]
+        ys = [place[start][1], place[end][1]]
         plt.plot(xs, ys, 'b-', lw=1.5)
 
-    for node, (x, y) in levels.items():
+    for node, (x, y) in place.items():
         plt.text(x, y, node, ha='center', va='center', bbox=dict(facecolor='white', edgecolor='blue'))
 
     plt.axis('off')
@@ -96,7 +95,6 @@ def show_visualizations():
     # Bar plot for subcriteria weights
     fig, axes = plt.subplots(1, 3, figsize=(14, 7))
     fig.suptitle('Βάρη Υποκριτηρίων ανά Κριτήριο')
-
     colors = sns.color_palette('Set2')
     for ax, (criteria, subs), color in zip(axes, subcriteria.items(), colors):
         weights = subcriteria_weights[criteria]
@@ -115,7 +113,6 @@ def show_visualizations():
     # Bar plot for alternatives
     plt.figure(figsize=(8, 6))
     sns.barplot(x=alternatives, y=alternative_scores, palette="Blues_d")
-
     plt.title('Τελική Κατάταξη Εναλλακτικών Λύσεων')
     plt.xlabel('Εναλλακτικές Λύσεις')
     plt.ylabel('Βαθμολογία')
