@@ -1,4 +1,3 @@
-# sensitivity_analysis.py
 import numpy as np
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -7,9 +6,9 @@ from tqdm import tqdm
 def parallel_perturbation_analysis():
     # Αρχικά δεδομένα AHP
     criteria = ['Οικονομικά θέματα', 'Απόδοση', 'Κοινωνική αποδοχή']
-    original_weights = np.array([0.2970, 0.5396, 0.1634])
+    original_weights = np.array([0.1638, 0.5390, 0.2973])
     alternatives = ['Ιστοσελίδα', 'Mobile εφαρμογή', 'Κεντρικό σύστημα']
-    original_scores = np.array([0.2436, 0.3127, 0.4437])
+    original_scores = np.array([0.3903, 0.2943, 0.3154])
 
     # Παράμετροι Monte Carlo
     N = 10000  # Αριθμός επαναλήψεων

@@ -96,9 +96,8 @@ def ahp_analysis():
     print(f"CR: {cr_social:.4f} ({'Συνεπής' if cr_social < 0.1 else 'Μη συνεπής'})")
 
     print("\n3. ΤΕΛΙΚΗ ΒΑΘΜΟΛΟΓΙΑ ΕΝΑΛΛΑΚΤΙΚΩΝ:")
-    ranked = sorted(zip(alternatives, alternative_scores), key=lambda x: -x[1])
-    for i, (alt, score) in enumerate(ranked, 1):
-        print(f"{i}. {alt}: {score:.4f}")
+    for alt, score in zip(alternatives, alternative_scores):
+        print(f"{alt}: {score:.4f}")
 
 
 if __name__ == "__main__":
