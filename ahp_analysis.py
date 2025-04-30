@@ -18,11 +18,11 @@ def calculate_cr(matrix):
     return CI / RI if RI != 0 else 0.0
 
 def generate_random_matrix(size=3):
-    saaty_scale = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9]
     matrix = np.ones((size, size))
     for i in range(size):
         for j in range(i + 1, size):
-            val = random.choice(saaty_scale)
+            val = np.random.choice(scale)
             matrix[i][j] = val
             matrix[j][i] = 1 / val
     return matrix
@@ -158,6 +158,16 @@ def ahp_multi_expert(n_experts=10):
     print("\n3. ΜΕΣΟΙ ΟΡΟΙ ΒΑΘΜΟΛΟΓΙΩΝ ΕΝΑΛΛΑΚΤΙΚΩΝ:")
     for alt, score in zip(alternatives, avg_scores):
         print(f"{alt}: {score:.4f}")
+
+    return {
+        "criteria_weights": avg_criteria,
+        "subcriteria_weights": {
+            "Οικονομικά θέματα": avg_economic,
+            "Απόδοση": avg_performance,
+            "Κοινωνική αποδοχή": avg_social
+        },
+        "alternative_scores": avg_scores
+    }
 
 # Run the full analysis
 if __name__ == "__main__":

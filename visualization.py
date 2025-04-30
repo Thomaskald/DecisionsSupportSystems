@@ -1,26 +1,24 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+from ahp_analysis import ahp_multi_expert
 
 
 def show_visualizations():
+    # Get results from AHP analysis
+    results = ahp_multi_expert(n_experts=10)
 
-    # Values from previous question
     criteria = ['Οικονομικά θέματα', 'Απόδοση', 'Κοινωνική αποδοχή']
-    criteria_weights = [0.1638, 0.5390, 0.2973]
+    criteria_weights = results["criteria_weights"]
 
     subcriteria = {
         'Οικονομικά θέματα': ['Κόστος ανάπτυξης', 'Κόστος συντήρησης'],
         'Απόδοση': ['Αξιοπιστία', 'Ταχύτητα', 'Ασφάλεια δεδομένων'],
         'Κοινωνική αποδοχή': ['Συμβατότητα', 'Ευχρηστία']
     }
-    subcriteria_weights = {
-        'Οικονομικά θέματα': [0.3333, 0.6667],
-        'Απόδοση': [0.5714, 0.2857, 0.1429],
-        'Κοινωνική αποδοχή': [0.7500, 0.2500]
-    }
+    subcriteria_weights = results["subcriteria_weights"]
 
-    alternatives = ['Ιστοσελίδα', 'Mobile εφαρμογή', 'Κεντρικό σύστημα']
-    alternative_scores = [0.3903, 0.2943, 0.3154]
+    alternatives = ['Ιστοσελίδα', 'Mobile εφαρμογή','Κεντρικό σύστημα']
+    alternative_scores = results["alternative_scores"]
 
     #Hierarchy graph
     plt.figure(figsize=(14, 7))
