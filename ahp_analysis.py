@@ -1,22 +1,23 @@
 import numpy as np
 
-# === AHP Functions ===
-
+# Function to calculate weights
 def calculate_weights(matrix):
     normalized = matrix / matrix.sum(axis=0)
     return normalized.mean(axis=1)
 
+# Function to calculate CR
 def calculate_cr(matrix):
     n = matrix.shape[0]
-    if n <= 2: return 0.0
+    if n <= 2: return 0.0 #For matrices smaller than 3x3
     weights = calculate_weights(matrix)
     weighted_sum = np.dot(matrix, weights)
     l_max = np.mean(weighted_sum / weights)
     CI = (l_max - n) / (n - 1)
-    RI = {3: 0.58, 4: 0.90, 5: 1.12, 6: 1.24, 7: 1.32, 8: 1.41, 9: 1.45}.get(n, 0.58)
+    RI = 0.58 # 0.58 because we only have 3x3 matrices, except the 2x2 that we return 0.0
     return CI / RI if RI != 0 else 0.0
 
-def generate_random_matrix(size=3):
+# FUnction to generate random matrices
+def generate_random_matrix(size):
     scale = [1, 2, 3, 4, 5, 6, 7, 8, 9, 1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9]
     matrix = np.ones((size, size))
     for i in range(size):
@@ -26,15 +27,16 @@ def generate_random_matrix(size=3):
             matrix[j][i] = 1 / val
     return matrix
 
+# Function to generate random matrix
 def generate_consistent_matrix(size):
     while True:
         m = generate_random_matrix(size)
+        # If cr of the matrix is < 0.1 then return the matrix, else generates the matrix again
         if calculate_cr(m) < 0.1:
             return m
 
-# === AHP per Specialist ===
-
-def ahp_for_expert():
+# Analysis for one expert
+def ahp_for_one_expert():
     # Generate all matrices
     matrices = {
         "criteria": generate_consistent_matrix(3),
@@ -50,11 +52,11 @@ def ahp_for_expert():
         "usability": generate_consistent_matrix(3)
     }
 
-    # Calculate weights and CR
+    # Calculate weights and cr
     weights = {k: calculate_weights(m) for k, m in matrices.items()}
     crs = {k: calculate_cr(m) for k, m in matrices.items()}
 
-    # Compute final alternative scores
+    # Calculates final alternative scores
     criteria_weights = weights["criteria"]
     economic_weights = weights["economic"]
     performance_weights = weights["performance"]
@@ -83,27 +85,26 @@ def ahp_for_expert():
         "scores": alternative_scores
     }
 
-# === Run for Multiple Experts ===
-
-def ahp_multi_expert(n_experts=10):
+# Analysis for all the experts
+def complete_ahp_analysis(n_experts=10):
     all_results = []
 
+    # Repeats the analysis for each expert
     for i in range(n_experts):
-        print(f"\n========== ΕΙΔΙΚΟΣ {i + 1} ==========\n")
-        result = ahp_for_expert()
+        print(f"\n\t\t\t ΕΙΔΙΚΟΣ {i + 1}\n")
+        result = ahp_for_one_expert()
         weights = result["weights"]
         crs = result["crs"]
         scores = result["scores"]
         all_results.append(result)
 
-        # Labels
         criteria = ['Οικονομικά θέματα', 'Απόδοση', 'Κοινωνική αποδοχή']
         economic_sub = ['Κόστος ανάπτυξης', 'Κόστος συντήρησης']
         performance_sub = ['Αξιοπιστία', 'Ταχύτητα', 'Ασφάλεια δεδομένων']
         social_sub = ['Συμβατότητα', 'Ευχρηστία']
         alternatives = ['Ιστοσελίδα', 'Mobile εφαρμογή', 'Κεντρικό σύστημα']
 
-        # Print results per expert
+        # Results for each expert
         print("1. ΒΑΡΗ ΚΡΙΤΗΡΙΩΝ:")
         for c, w in zip(criteria, weights["criteria"]):
             print(f"{c}: {w:.4f}")
@@ -129,8 +130,8 @@ def ahp_multi_expert(n_experts=10):
         for alt, score in zip(alternatives, scores):
             print(f"{alt}: {score:.4f}")
 
-    # === Averages ===
-    print("\n========== ΜΕΣΟΙ ΟΡΟΙ ΑΠΟΤΕΛΕΣΜΑΤΩΝ ==========\n")
+    # Final results
+    print("\n\t\t\t ΣΥΝΟΛΙΚΑ ΤΕΛΙΚΑ ΑΠΟΤΕΛΕΣΜΑΤΑ\n")
     avg_criteria = np.mean([r["weights"]["criteria"] for r in all_results], axis=0)
     avg_economic = np.mean([r["weights"]["economic"] for r in all_results], axis=0)
     avg_performance = np.mean([r["weights"]["performance"] for r in all_results], axis=0)
@@ -158,6 +159,7 @@ def ahp_multi_expert(n_experts=10):
     for alt, score in zip(alternatives, avg_scores):
         print(f"{alt}: {score:.4f}")
 
+    # Return results to pass them to visualization.py
     return {
         "criteria_weights": avg_criteria,
         "subcriteria_weights": {
@@ -168,6 +170,6 @@ def ahp_multi_expert(n_experts=10):
         "alternative_scores": avg_scores
     }
 
-# Run the full analysis
+
 if __name__ == "__main__":
-    ahp_multi_expert(n_experts=10)
+    complete_ahp_analysis(n_experts=10)

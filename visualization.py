@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from ahp_analysis import ahp_multi_expert
+from ahp_analysis import complete_ahp_analysis
 
 
 def show_visualizations():
-    # Get results from AHP analysis
-    results = ahp_multi_expert(n_experts=10)
+    # Results from ahp_analysis.py
+    results = complete_ahp_analysis(n_experts=10)
 
     criteria = ['Οικονομικά θέματα', 'Απόδοση', 'Κοινωνική αποδοχή']
     criteria_weights = results["criteria_weights"]
@@ -23,6 +23,7 @@ def show_visualizations():
     #Hierarchy graph
     plt.figure(figsize=(14, 7))
     plt.title('Ιεραρχική Δομή Απόφασης AHP')
+    # The position of each "box"
     place = {
         'Αναβάθμιση ΕΣΥ': (0, 2),
         'Οικονομικά θέματα': (-2, 1),
@@ -39,6 +40,7 @@ def show_visualizations():
         'Εφαρμογή': (0, -1),
         'Κεντρικό σύστημα': (1.5, -1)
     }
+    # Connections of each "box"
     connections = [
         ('Αναβάθμιση ΕΣΥ', 'Οικονομικά θέματα'),
         ('Αναβάθμιση ΕΣΥ', 'Απόδοση'),
@@ -72,7 +74,7 @@ def show_visualizations():
         ('Συμβατότητα', 'Κεντρικό σύστημα'),
         ('Ευχρηστία', 'Κεντρικό σύστημα')
     ]
-
+    # Creating the hierarchy graph
     for start, end in connections:
         xs = [place[start][0], place[end][0]]
         ys = [place[start][1], place[end][1]]
@@ -112,15 +114,11 @@ def show_visualizations():
     plt.figure(figsize=(8, 6))
     sns.barplot(x=alternatives, y=alternative_scores, palette="Blues_d")
     plt.title('Τελική Κατάταξη Εναλλακτικών Λύσεων')
-    plt.xlabel('Εναλλακτικές Λύσεις')
-    plt.ylabel('Βαθμολογία')
     for i, v in enumerate(alternative_scores):
         plt.text(i, v + 0.01, f'{v:.2%}', ha='center', va='bottom')
 
     plt.tight_layout()
     plt.show()
-
-
 
 
 if __name__ == "__main__":
