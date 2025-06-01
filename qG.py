@@ -38,6 +38,7 @@ strategies = {
 }
 
 emv_results = {}
+print("\n----------EMV results----------\n")
 
 for category, options in strategies.items():
     print(category)
@@ -47,3 +48,23 @@ for category, options in strategies.items():
         emv = expected_value - data["cost"]
         emv_results[category][name] = emv
         print(f"{name}: EMV = {emv:.2f}€")
+
+evpi_results = {}
+print("\n----------EVPI results----------\n")
+
+for category, options in strategies.items():
+    max_emv = max(emv_results[category].values())
+
+    scenarios = {}
+    for name, data in options.items():
+        for prob, result in data["results"]:
+            net_value = result - data["cost"]
+            if prob not in scenarios:
+                scenarios[prob] = []
+            scenarios[prob].append(net_value)
+
+    evwpi = sum(prob * max(values) for prob, values in scenarios.items())
+
+    evpi = evwpi - max_emv
+    evpi_results[category] = evpi
+    print(f"{category}: EVPI = {evpi:.2f}€")
