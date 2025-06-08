@@ -1,4 +1,5 @@
 # Data definition
+import numpy as np
 
 strategies = {
     "Marketing":{
@@ -8,11 +9,11 @@ strategies = {
         },
         "Μέτριο":{
             "cost": 40000,
-            "results": [(0.4, 120000), (0.4, 60000), (0.2, 20000)]
+            "results": [(0.6, 120000), (0.3, 60000), (0.1, 20000)]
         },
         "Συντηρητικό":{
             "cost": 25000,
-            "results": [(0.2, 100000), (0.5, 50000), (0.3, 15000)]
+            "results": [(0.6, 100000), (0.3, 50000), (0.1, 15000)]
         }
     },
     "Investment":{
@@ -22,7 +23,7 @@ strategies = {
         },
         "Χαμηλό":{
             "cost": 30000,
-            "results": [(0.4, 50000), (0.6, -20000)]
+            "results": [(0.6, 50000), (0.4, -20000)]
         }
     },
     "Supply":{
@@ -32,7 +33,7 @@ strategies = {
         },
         "Φτηνά υλικά":{
             "cost": 30000,
-            "results": [(0.4, 120000), (0.6, 20000)]
+            "results": [(0.7, 120000), (0.3, 20000)]
         }
     }
 }
@@ -53,18 +54,29 @@ evpi_results = {}
 print("\n----------EVPI results----------\n")
 
 for category, options in strategies.items():
-    max_emv = max(emv_results[category].values())
+    print(f"Κατηγορία: {category}")
+    strategy_names = list(options.keys())
+    payoff_matrix = []
+    probabilities = [prob for prob, _ in list(options.values())[0]["results"]]
 
-    scenarios = {}
-    for name, data in options.items():
-        for prob, result in data["results"]:
-            net_value = result - data["cost"]
-            if prob not in scenarios:
-                scenarios[prob] = []
-            scenarios[prob].append(net_value)
+    for name in strategy_names:
+        strategy = options[name]
+        net_results = [result - strategy["cost"] for prob, result in strategy["results"]]
+        payoff_matrix.append(net_results)
 
-    evwpi = sum(prob * max(values) for prob, values in scenarios.items())
+    payoff_matrix = np.array(payoff_matrix)
 
-    evpi = evwpi - max_emv
-    evpi_results[category] = evpi
-    print(f"{category}: EVPI = {evpi:.2f}€")
+    # Υπολογισμός EVwPI
+    best_per_scenario = np.max(payoff_matrix, axis=0)
+    evwpi = np.dot(probabilities, best_per_scenario)
+
+    # Ανάκτηση μέγιστου EMV από τα υπολογισμένα emv_results
+    best_emv = max(emv_results[category].values())
+
+    # Υπολογισμός EVPI
+    evpi = evwpi - best_emv
+
+    print(f"  ➤ EVwPI = {evwpi:.2f}€")
+    print(f"  ➤ Max EMV = {best_emv:.2f}€")
+    print(f"  ➤ EVPI = {evpi:.2f}€")
+    print("-" * 40)
