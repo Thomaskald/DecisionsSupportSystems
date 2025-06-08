@@ -51,32 +51,26 @@ for category, options in strategies.items():
         print(f"{name}: EMV = {emv:.2f}€")
 
 evpi_results = {}
+
 print("\n----------EVPI results----------\n")
-
 for category, options in strategies.items():
-    print(f"Κατηγορία: {category}")
-    strategy_names = list(options.keys())
-    payoff_matrix = []
-    probabilities = [prob for prob, _ in list(options.values())[0]["results"]]
 
-    for name in strategy_names:
-        strategy = options[name]
-        net_results = [result - strategy["cost"] for prob, result in strategy["results"]]
-        payoff_matrix.append(net_results)
+    probabilities = [p for p, r in next(iter(options.values()))["results"]]
 
-    payoff_matrix = np.array(payoff_matrix)
+    payoffs_per_state = []
+    for i in range(len(probabilities)):
+        payoffs_state_i = []
+        for name, data in options.items():
+            payoff = data["results"][i][1] - data["cost"]
+            payoffs_state_i.append(payoff)
+        payoffs_per_state.append(payoffs_state_i)
 
-    # Υπολογισμός EVwPI
-    best_per_scenario = np.max(payoff_matrix, axis=0)
-    evwpi = np.dot(probabilities, best_per_scenario)
+    max_payoffs_per_state = [max(payoffs) for payoffs in payoffs_per_state]
 
-    # Ανάκτηση μέγιστου EMV από τα υπολογισμένα emv_results
-    best_emv = max(emv_results[category].values())
+    Evwpi = sum(p * payoff for p, payoff in zip(probabilities, max_payoffs_per_state))
 
-    # Υπολογισμός EVPI
-    evpi = evwpi - best_emv
+    max_emv = max(emv_results[category].values())
 
-    print(f"  ➤ EVwPI = {evwpi:.2f}€")
-    print(f"  ➤ Max EMV = {best_emv:.2f}€")
-    print(f"  ➤ EVPI = {evpi:.2f}€")
-    print("-" * 40)
+    EVPI = Evwpi - max_emv
+
+    print(f"{category}: EVPI = {EVPI:.2f}€")
