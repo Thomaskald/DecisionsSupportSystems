@@ -1,252 +1,170 @@
-# Data definition
 import matplotlib.pyplot as plt
 
-strategies = {
-    "Marketing":{
-        "Επιθετικό":{
-            "cost": 70000,
-            "results": [(0.6, 220000), (0.3, 100000), (0.1, 40000)]
-        },
-        "Μέτριο":{
-            "cost": 40000,
-            "results": [(0.6, 120000), (0.3, 60000), (0.1, 20000)]
-        },
-        "Συντηρητικό":{
-            "cost": 25000,
-            "results": [(0.6, 100000), (0.3, 50000), (0.1, 15000)]
-        }
-    },
-    "Investment":{
-        "Υψηλό":{
-            "cost": 100000,
-            "results": [(0.6, 250000), (0.4, 40000)]
-        },
-        "Χαμηλό":{
-            "cost": 30000,
-            "results": [(0.6, 50000), (0.4, -20000)]
-        }
-    },
-    "Supply":{
-        "Ακριβά υλικά":{
-            "cost": 70000,
-            "results": [(0.7, 165000), (0.3, 40000)]
-        },
-        "Φτηνά υλικά":{
-            "cost": 30000,
-            "results": [(0.7, 120000), (0.3, 20000)]
-        }
-    }
-}
-
-# EMV
-emv_results = {}
-print("\n----------EMV results----------\n")
-
-for category, options in strategies.items():
-    print(category)
-    emv_results[category] = {}
-    for name, data in options.items():
-        expected_value = sum(prob * result for prob, result in data["results"])
-        emv = expected_value - data["cost"]
-        emv_results[category][name] = emv
-        print(f"{name}: EMV = {emv:.2f}€")
-
-
-# EVPI
-evpi_results = {}
-
-print("\n----------EVPI results----------\n")
-for category, options in strategies.items():
-
-    probabilities = [p for p, r in next(iter(options.values()))["results"]]
-
-    payoffs_per_state = []
-    for i in range(len(probabilities)):
-        payoffs_state_i = []
-        for name, data in options.items():
-            payoff = data["results"][i][1] - data["cost"]
-            payoffs_state_i.append(payoff)
-        payoffs_per_state.append(payoffs_state_i)
-
-    max_payoffs_per_state = [max(payoffs) for payoffs in payoffs_per_state]
-
-    Evwpi = sum(p * payoff for p, payoff in zip(probabilities, max_payoffs_per_state))
-
-    max_emv = max(emv_results[category].values())
-
-    EVPI = Evwpi - max_emv
-
-    print(f"{category}: EVPI = {EVPI:.2f}€")
-#
-# # EVSI
-# outcomes = ["Θετικό", "Αρνητικό"]
-# test_probabilities = {
-#     "Marketing": np.array([
-#         [0.8, 0.2],  # P(Θετικό|High)
-#         [0.5, 0.5],  # P(Θετικό|Medium)
-#         [0.2, 0.8]   # P(Θετικό|Low)
-#     ]),
-#     "Investment": np.array([
-#         [0.7, 0.3],  # P(Θετικό|High)
-#         [0.4, 0.6],  # P(Θετικό|Low)
-#     ]),
-#     "Supply": np.array([
-#         [0.9, 0.1],  # P(Θετικό|High)
-#         [0.3, 0.7],  # P(Θετικό|Low)
-#     ])
-# }
-#
-# print("\n----------EVSI results----------\n")
-#
-# for category, likelihood in test_probabilities.items():
-#     # Πιθανότητες καταστάσεων (a priori)
-#     prior_probs = [p for p, r in next(iter(strategies[category].values()))["results"]]
-#
-#     # Υπολογισμός συνολικής πιθανότητας κάθε test outcome
-#     test_probs = np.dot(prior_probs, likelihood)  # vector με πιθανότητες test outcomes
-#
-#     # Υπολογισμός a-posteriori πιθανοτήτων για κάθε αποτέλεσμα
-#     posterior_probs = (likelihood.T * prior_probs).T / test_probs
-#
-#     evsi_sum = 0
-#     for i, test_outcome_prob in enumerate(test_probs):
-#         post_probs = posterior_probs[:, i]
-#         max_emv_post = float('-inf')
-#
-#         # Υπολογισμός νέου EMV για κάθε επιλογή με a-posteriori πιθανότητες
-#         for name, data in strategies[category].items():
-#             expected_value_post = sum(post_probs[j] * data["results"][j][1] for j in range(len(post_probs)))
-#             emv_post = expected_value_post - data["cost"]
-#             if emv_post > max_emv_post:
-#                 max_emv_post = emv_post
-#
-#         evsi_sum += test_outcome_prob * max_emv_post
-#
-#     best_emv = max(emv_results[category].values())
-#     evsi = evsi_sum - best_emv
-#
-#     print(f"{category}: EVSI = {evsi:.2f}€")
-
-    # SENSITIVITY ANALYSIS ±10% on highest probability
-print("\n----------Sensitivity Analysis (±10% on highest probability)----------\n")
-
-deltas = [-0.1, 0.1]
-
-for delta in deltas:
-    print(f"\n>>> Change in highest probability: {delta * 100:+.0f}%\n")
+def calculate_emv(strategies):
+    emv_results = {}
+    print("\n----------EMV results----------\n")
     for category, options in strategies.items():
-        print(f"Category: {category}")
-        best_option = None
-        best_emv = float('-inf')
-
+        print(category)
+        emv_results[category] = {}
         for name, data in options.items():
-            original_results = data["results"]
-            cost = data["cost"]
+            expected_value = sum(prob * result for prob, result in data["results"])
+            emv = expected_value - data["cost"]
+            emv_results[category][name] = emv
+            print(f"{name}: EMV = {emv:.2f}€")
+    return emv_results
 
-            # Copy results
-            results = [(p, v) for p, v in original_results]
-            max_idx = max(range(len(results)), key=lambda i: results[i][0])
-            max_prob = results[max_idx][0]
+def calculate_evpi(strategies, emv_results):
+    print("\n----------EVPI results----------\n")
+    for category, options in strategies.items():
+        probabilities = [p for p, r in next(iter(options.values()))["results"]]
+        payoffs_per_state = []
+        for i in range(len(probabilities)):
+            payoffs_state_i = []
+            for name, data in options.items():
+                payoff = data["results"][i][1] - data["cost"]
+                payoffs_state_i.append(payoff)
+            payoffs_per_state.append(payoffs_state_i)
+        max_payoffs_per_state = [max(payoffs) for payoffs in payoffs_per_state]
+        Evwpi = sum(p * payoff for p, payoff in zip(probabilities, max_payoffs_per_state))
+        max_emv = max(emv_results[category].values())
+        EVPI = Evwpi - max_emv
+        print(f"{category}: EVPI = {EVPI:.2f}€")
 
-            # Adjust max probability
-            new_max_prob = max_prob * (1 + delta)
-            if new_max_prob > 1:
-                new_max_prob = 1.0
-            remaining_prob = 1.0 - new_max_prob
-
-            # Adjust other probabilities proportionally
-            other_total = sum(results[i][0] for i in range(len(results)) if i != max_idx)
-            new_results = []
-            for i in range(len(results)):
-                if i == max_idx:
-                    new_results.append((new_max_prob, results[i][1]))
-                else:
-                    if other_total > 0:
-                        new_p = remaining_prob * (results[i][0] / other_total)
-                    else:
-                        new_p = 0
-                    new_results.append((new_p, results[i][1]))
-
-            # Check total probability
-            prob_sum = sum(p for p, _ in new_results)
-            if abs(prob_sum - 1.0) > 0.0001:
-                print(f"⚠️ WARNING: Probabilities do not sum to 1 in {name} (sum = {prob_sum:.4f})")
-
-            # Calculate new EMV
-            new_expected_value = sum(p * v for p, v in new_results)
-            new_emv = new_expected_value - cost
-            print(f"{name}: Adjusted EMV = {new_emv:.2f}€")
-
-            if new_emv > best_emv:
-                best_emv = new_emv
-                best_option = name
-
-        print(f"--> Best Option: {best_option} with EMV = {best_emv:.2f}€\n")
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Prepare the probability variation range (similar to your example image)
-prob_range = np.linspace(0.15, 0.95, 9)  # 0.15 to 0.95 in 9 steps
-
-# Create 6 subplots (2 rows, 3 columns)
-fig, axes = plt.subplots(2, 3, figsize=(20, 12))
-fig.suptitle('Sensitivity Analysis of EMV (Varying Highest Probability)', fontsize=16)
-
-for i, category in enumerate(strategies.keys()):
-    for j, delta in enumerate([-0.1, 0.1]):  # -10% and +10% variations
-        ax = axes[j, i]
-
-        # Get all options for this category
-        option_names = list(strategies[category].keys())
-
-        # Prepare to store all EMV curves
-        emv_curves = {name: [] for name in option_names}
-
-        # Vary the probability and calculate EMV for each option
-        for base_prob in prob_range:
-            for name in option_names:
-                data = strategies[category][name]
+def sensitivity_analysis(strategies):
+    print("\n----------Sensitivity Analysis (±10% on highest probability)----------\n")
+    deltas = [-0.1, 0.1]
+    for delta in deltas:
+        print(f"\n>>> Change in highest probability: {delta * 100:+.0f}%\n")
+        for category, options in strategies.items():
+            print(f"Category: {category}")
+            for name, data in options.items():
                 original_results = data["results"]
                 cost = data["cost"]
-
-                # Find the highest probability outcome
-                max_idx = max(range(len(original_results)),
-                              key=lambda k: original_results[k][0])
-                max_prob = original_results[max_idx][0]
-
-                # Adjust the max probability (but keep it between 0 and 1)
-                new_max_prob = max(0, min(1, base_prob))
+                results = [(p, v) for p, v in original_results]
+                max_idx = max(range(len(results)), key=lambda i: results[i][0])
+                max_prob = results[max_idx][0]
+                new_max_prob = min(max_prob * (1 + delta), 1.0)
                 remaining_prob = 1.0 - new_max_prob
-
-                # Adjust other probabilities proportionally
-                other_total = sum(original_results[k][0]
-                                  for k in range(len(original_results)) if k != max_idx)
+                other_total = sum(results[i][0] for i in range(len(results)) if i != max_idx)
                 new_results = []
-                for k in range(len(original_results)):
-                    if k == max_idx:
-                        new_results.append((new_max_prob, original_results[k][1]))
+                for i in range(len(results)):
+                    if i == max_idx:
+                        new_results.append((new_max_prob, results[i][1]))
                     else:
-                        if other_total > 0:
-                            new_p = remaining_prob * (original_results[k][0] / other_total)
-                        else:
-                            new_p = 0
-                        new_results.append((new_p, original_results[k][1]))
-
-                # Calculate EMV
+                        new_p = remaining_prob * (results[i][0] / other_total) if other_total > 0 else 0
+                        new_results.append((new_p, results[i][1]))
                 new_expected_value = sum(p * v for p, v in new_results)
                 new_emv = new_expected_value - cost
-                emv_curves[name].append(new_emv)
+                print(f"{name}: Adjusted EMV = {new_emv:.2f}€")
 
-        # Plot all curves for this category and delta
-        for name in option_names:
-            ax.plot(prob_range, emv_curves[name], marker='o', label=name)
+def plot_sensitivity(base_emv, results):
+    fig, axes = plt.subplots(2, 3, figsize=(20, 12))
+    plt.subplots_adjust(hspace=0.4, wspace=0.3)
+    fig.suptitle('EMV Sensitivity Analysis: Impact of Probability Changes', fontsize=16, y=0.98)
+    styles = {
+        "Marketing": {
+            "Επιθετικό": {'color': '#1f77b4', 'marker': 'o', 'linestyle': '-', 'markersize': 8},
+            "Μέτριο": {'color': '#ff7f0e', 'marker': 's', 'linestyle': '--', 'markersize': 8},
+            "Συντηρητικό": {'color': '#2ca02c', 'marker': '^', 'linestyle': ':', 'markersize': 8}
+        },
+        "Investment": {
+            "Υψηλό": {'color': '#d62728', 'marker': 'o', 'linestyle': '-', 'markersize': 8},
+            "Χαμηλό": {'color': '#9467bd', 'marker': 's', 'linestyle': '--', 'markersize': 8}
+        },
+        "Supply": {
+            "Ακριβά υλικά": {'color': '#8c564b', 'marker': 'o', 'linestyle': '-', 'markersize': 8},
+            "Φτηνά υλικά": {'color': '#e377c2', 'marker': 's', 'linestyle': '--', 'markersize': 8}
+        }
+    }
+    x_points = [0, 1]
+    x_labels = ['Base Case', 'Adjusted']
+    for row, change in enumerate(["-10%", "+10%"]):
+        for col, category in enumerate(["Marketing", "Investment", "Supply"]):
+            ax = axes[row, col]
+            options = results[change][category]
+            all_values = list(base_emv[category].values()) + list(options.values())
+            y_min = min(all_values) - 0.1 * abs(min(all_values))
+            y_max = max(all_values) + 0.1 * abs(max(all_values))
+            for name, adj_emv in options.items():
+                base = base_emv[category][name]
+                style = styles[category][name]
+                ax.plot(x_points, [base, adj_emv], label=name, linewidth=2.5,
+                        marker=style['marker'], linestyle=style['linestyle'],
+                        color=style['color'], markersize=style['markersize'])
+                ax.text(0, base, f' {base:,.0f}€ ', ha='right', va='center',
+                        fontsize=10, bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
+                ax.text(1, adj_emv, f' {adj_emv:,.0f}€ ', ha='left', va='center',
+                        fontsize=10, bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
+            ax.set_title(f'{category} Strategy\n{change} Probability Change', pad=12, fontsize=12)
+            ax.set_xticks(x_points)
+            ax.set_xticklabels(x_labels, fontsize=11)
+            ax.set_ylabel('EMV (€)', fontsize=11)
+            ax.grid(True, linestyle=':', alpha=0.7)
+            ax.legend(loc='upper left', fontsize=10)
+            ax.set_ylim(y_min, y_max)
+            if y_min < 0:
+                ax.axhline(0, color='black', linewidth=0.8, linestyle='-', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
 
-        ax.set_title(f'{category} - {"+" if delta > 0 else ""}{delta * 100:.0f}% Change')
-        ax.set_xlabel('Adjusted Probability')
-        ax.set_ylabel('EMV (€)')
-        ax.legend()
-        ax.grid(True)
+if __name__ == '__main__':
+    strategies = {
+        "Marketing":{
+            "Επιθετικό":{
+                "cost": 70000,
+                "results": [(0.6, 220000), (0.3, 100000), (0.1, 40000)]
+            },
+            "Μέτριο":{
+                "cost": 40000,
+                "results": [(0.6, 120000), (0.3, 60000), (0.1, 20000)]
+            },
+            "Συντηρητικό":{
+                "cost": 25000,
+                "results": [(0.6, 100000), (0.3, 50000), (0.1, 15000)]
+            }
+        },
+        "Investment":{
+            "Υψηλό":{
+                "cost": 100000,
+                "results": [(0.6, 250000), (0.4, 40000)]
+            },
+            "Χαμηλό":{
+                "cost": 30000,
+                "results": [(0.6, 50000), (0.4, -20000)]
+            }
+        },
+        "Supply":{
+            "Ακριβά υλικά":{
+                "cost": 70000,
+                "results": [(0.7, 165000), (0.3, 40000)]
+            },
+            "Φτηνά υλικά":{
+                "cost": 30000,
+                "results": [(0.7, 120000), (0.3, 20000)]
+            }
+        }
+    }
 
-plt.tight_layout()
-plt.show()
+    base_emv = {
+        "Marketing": {"Επιθετικό": 96000, "Μέτριο": 52000, "Συντηρητικό": 51500},
+        "Investment": {"Υψηλό": 66000, "Χαμηλό": -8000},
+        "Supply": {"Ακριβά υλικά": 57500, "Φτηνά υλικά": 60000}
+    }
+
+    results = {
+        "-10%": {
+            "Marketing": {"Επιθετικό": 87900, "Μέτριο": 47800, "Συντηρητικό": 47975},
+            "Investment": {"Υψηλό": 53400, "Χαμηλό": -12200},
+            "Supply": {"Ακριβά υλικά": 48750, "Φτηνά υλικά": 53000}
+        },
+        "+10%": {
+            "Marketing": {"Επιθετικό": 104100, "Μέτριο": 56200, "Συντηρητικό": 55025},
+            "Investment": {"Υψηλό": 78600, "Χαμηλό": -3800},
+            "Supply": {"Ακριβά υλικά": 66250, "Φτηνά υλικά": 67000}
+        }
+    }
+
+    emv_results = calculate_emv(strategies)
+    calculate_evpi(strategies, emv_results)
+    sensitivity_analysis(strategies)
+    plot_sensitivity(base_emv, results)
