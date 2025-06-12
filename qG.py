@@ -189,18 +189,18 @@ if __name__ == '__main__':
         "Supply":{
             "Ακριβά υλικά":{
                 "cost": 70000,
-                "results": [(0.7, 165000), (0.3, 40000)]
+                "results": [(0.6, 165000), (0.4, 40000)]
             },
             "Φτηνά υλικά":{
                 "cost": 30000,
-                "results": [(0.7, 120000), (0.3, 20000)]
+                "results": [(0.6, 120000), (0.4, 20000)]
             }
         }
     }
 
     base_probabilities = {
-        "P(Y)": 0.4,
-        "P(X)": 0.6
+        "P(Y)": 0.6,
+        "P(X)": 0.4
     }
 
     test_results = {
@@ -213,7 +213,7 @@ if __name__ == '__main__':
     }
 
     base_emv = {
-        "Marketing": {"Επιθετικό": 96000, "Μέτριο": 52000, "Συντηρητικό": 51500},
+        "Marketing": {"Επιθετικό": 102000, "Μέτριο": 56000, "Συντηρητικό": 55000},
         "Investment": {"Υψηλό": 66000, "Χαμηλό": -8000},
         "Supply": {"Ακριβά υλικά": 57500, "Φτηνά υλικά": 60000}
     }
@@ -234,5 +234,5 @@ if __name__ == '__main__':
     emv_results = calculate_emv(strategies)
     calculate_evpi(strategies, emv_results)
     calculate_evsi(strategies, base_probabilities, test_results)
-    sensitivity_analysis(strategies)
-    plot_sensitivity(base_emv, results)
+    #sensitivity_analysis(strategies)
+    #plot_sensitivity(base_emv, results)
