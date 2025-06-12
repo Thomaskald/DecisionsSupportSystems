@@ -30,6 +30,59 @@ def calculate_evpi(strategies, emv_results):
         EVPI = Evwpi - max_emv
         print(f"{category}: EVPI = {EVPI:.2f}€")
 
+def calculate_evsi(strategies, base_probabilities, test_results):
+    print("\n----------EVSI results----------\n")
+    P_Theta = test_results["P(Theta/Y)"] * base_probabilities["P(Y)"] + test_results["P(Theta/X)"] * base_probabilities["P(X)"]
+    P_I = test_results["P(I/Y)"] * base_probabilities["P(Y)"] + test_results["P(I/X)"] * base_probabilities["P(X)"]
+    P_A = test_results["P(A/Y)"] * base_probabilities["P(Y)"] + test_results["P(A/X)"] * base_probabilities["P(X)"]
+
+    # Calculate posterior probabilities using Bayes' theorem
+    posterior = {
+        "P(Y/Theta)": (test_results["P(Theta/Y)"] * base_probabilities["P(Y)"]) / P_Theta,
+        "P(X/Theta)": (test_results["P(Theta/X)"] * base_probabilities["P(X)"]) / P_Theta,
+        "P(Y/I)": (test_results["P(I/Y)"] * base_probabilities["P(Y)"]) / P_I,
+        "P(X/I)": (test_results["P(I/X)"] * base_probabilities["P(X)"]) / P_I,
+        "P(Y/A)": (test_results["P(A/Y)"] * base_probabilities["P(Y)"]) / P_A,
+        "P(X/A)": (test_results["P(A/X)"] * base_probabilities["P(X)"]) / P_A,
+    }
+
+    # Now calculate EVSI for each category
+    for category, options in strategies.items():
+
+        # We need to calculate EMV for each possible test result (Θ, I, A)
+        emv_test_results = {"Theta": {}, "I": {}, "A": {}}
+
+        # For each test result, calculate the best EMV using posterior probabilities
+        for test_result in ["Theta", "I", "A"]:
+            # Get the posterior probabilities for this test result
+            p_Y = posterior[f"P(Y/{test_result})"]
+            p_X = posterior[f"P(X/{test_result})"]
+
+            # Calculate EMV for each option under these probabilities
+            for name, data in options.items():
+                # Assuming the first result in 'results' is for Y and second for X
+                # (You may need to adjust this based on your actual data structure)
+                payoff_Y = data["results"][0][1] - data["cost"]
+                payoff_X = data["results"][1][1] - data["cost"]
+
+                emv = p_Y * payoff_Y + p_X * payoff_X
+                emv_test_results[test_result][name] = emv
+
+        # Find the best option for each test result
+        best_emv_per_test_result = {
+            "Theta": max(emv_test_results["Theta"].values()),
+            "I": max(emv_test_results["I"].values()),
+            "A": max(emv_test_results["A"].values())
+        }
+
+        # Calculate EVSI
+        EVSI = (P_Theta * best_emv_per_test_result["Theta"] +
+                P_I * best_emv_per_test_result["I"] +
+                P_A * best_emv_per_test_result["A"]) - max(emv_results[category].values())
+
+        print(f"{category}: EVSI = {EVSI:.2f}€")
+
+
 def sensitivity_analysis(strategies):
     print("\n----------Sensitivity Analysis (±10% on highest probability)----------\n")
     deltas = [-0.1, 0.1]
@@ -145,6 +198,20 @@ if __name__ == '__main__':
         }
     }
 
+    base_probabilities = {
+        "P(Y)": 0.4,
+        "P(X)": 0.6
+    }
+
+    test_results = {
+        "P(Theta/Y)": 0.50,  # Probability of Positive test given Y
+        "P(I/Y)": 0.25,  # Probability of Inconclusive given Y
+        "P(A/Y)": 0.25,  # Probability of Negative given Y
+        "P(Theta/X)": 0.20,  # Probability of Positive test given X
+        "P(I/X)": 0.25,  # Probability of Inconclusive given X
+        "P(A/X)": 0.55   # Probability of Negative given X
+    }
+
     base_emv = {
         "Marketing": {"Επιθετικό": 96000, "Μέτριο": 52000, "Συντηρητικό": 51500},
         "Investment": {"Υψηλό": 66000, "Χαμηλό": -8000},
@@ -166,5 +233,6 @@ if __name__ == '__main__':
 
     emv_results = calculate_emv(strategies)
     calculate_evpi(strategies, emv_results)
+    calculate_evsi(strategies, base_probabilities, test_results)
     sensitivity_analysis(strategies)
     plot_sensitivity(base_emv, results)
