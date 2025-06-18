@@ -82,7 +82,7 @@ def calculate_evsi(strategies, base_probabilities, test_results):
 
 
 def sensitivity_analysis(strategies, base_prob, variations=[-0.10, 0, +0.10]):
-    print("\nSensitivity Analysis\n")
+    print("\nSensitivity Analysis")
     for category, options in strategies.items():
         print(f"\n{category}")
         original_p = base_prob["P(Y)"]
@@ -200,4 +200,4 @@ if __name__ == '__main__':
     calculate_evsi(strategies, base_probabilities, test_results)
     base_prob = {"P(Y)": 0.6, "P(X)": 0.4}
     sensitivity_analysis(strategies, base_prob)
-    plot_sensitivity_results(strategies, base_prob)
+    #plot_sensitivity_results(strategies, base_prob)
