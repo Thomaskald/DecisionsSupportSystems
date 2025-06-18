@@ -134,7 +134,6 @@ def plot_sensitivity_results(strategies, base_prob):
                      label=strategy_name,
                      linewidth=2)
 
-        # Format the plot
         plt.title(f"Sensitivity Analysis: {category}")
         plt.xlabel("Probability")
         plt.ylabel("EMV")
