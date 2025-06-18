@@ -106,7 +106,7 @@ def sensitivity_analysis(strategies, base_prob, variations=[-0.10, 0, +0.10]):
                     best_emv = emv
                     best_strategy = name
 
-            print(f"→ Best strategy: {best_strategy} (EMV = {best_emv:.2f}€)")
+            print(f"Best strategy: {best_strategy} (EMV = {best_emv:.2f}€)")
 
 
 def plot_sensitivity_results(strategies, base_prob):
